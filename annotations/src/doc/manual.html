@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Tangara annotations</title>
+<meta name="GENERATOR" content="Quanta Plus" />
+<meta name="AUTHOR" content="Gwen" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body>
+<h1>Manual</h1>
+<p>Tangara annotations is a set of annotations for supporting class
+transations (Class name and method names) and typing assist. These
+features are covered by the annotations LocalizableClass &amp;
+LocalizableMethod and Usage.</p>
+<h2>Localization features</h2>
+<p>The localization aims to translate automatically a into language
+specific classes. Imagine a class <q>AddressBook</q> that needs to be
+translated into several languages. This annotation retention level is
+CLASS.</p>
+<pre>
+  // PhoneBook.java file content
+  public class PhoneBook  {
+      public PhoneBook() { ... }
+      public void add(String personName, String phoneNumber) { ...  }
+      public void remove(String personName) { ... }
+      public String search(String personName) { ... }
+  }
+</pre>
+<p>If the need is to translate the class and its methods to french,
+you will need to create the following class</p>
+<pre>
+  // Annuaire.java file content
+  public class Annuaire extends PhoneBook {
+      public Annuaire() { ... }
+      public void ajouter(String personName, String phoneNumber) { ...  }
+      public void supprimer(String personName) { ... }
+      public String rechercher(String personName) { ... }
+  }
+</pre>
+<p>It's easy but tedious. If the code change (Original code or the
+translation) or if there are several languages to support, the hand
+support will be fastidious. The annotations LocalizableClass and
+LocalizableMethod have been developped to automatize this procedure.
+Their use is quite simple and similar to i18n principe (See
+<link
+	href="http://java.sun.com/javase/6/docs/api/java/util/ResourceBundle.html"
+	type="text/html">ResourceBundle</link>
+). The LocalizableClass and LocalizableMethod have attributes that are
+key entries in a resource bundle file containing the translation. Thus
+to translate automatically the example class into another language,
+there are four steps.</p>
+<h3>First step: instrument the base class with localization
+annotations</h3>
+<pre>
+  // PhoneBook.java file content
+  @LocalizableClass(value = "PhoneBook", localize = true)
+  public class PhoneBook  {
+      @LocalizableMethod("PhoneBook")
+      public PhoneBook() { ... }
+      
+      @LocalizableMethod("PhoneBook.add")
+      public void add(String personName, String phoneNumber) { ...  }
+      
+      @LocalizableMethod("PhoneBook.remove")
+      public void remove(String personName) { ... }
+      
+      @LocalizableMethod("PhoneBook.search")
+      public String search(String personName) { ... }
+  }
+</pre>
+<h3>Second step: define the translations</h3>
+<p>The file defining the translation are called localization
+resource bundle. They must be in the same package of the class to
+translate. The default resource base name is localize (It is possible to
+change it via the bundle attribute of the LocalizableClass annotation).
+The format of the localization resource bundle is the
+<link
+	href="http://java.sun.com/javase/6/docs/api/java/util/ResourceBundle.html"
+	type="text/html">resource bundle format</link>
+(The lang search algoritm is the same). The property keys are the
+'value' attribute of the annotations, the property values are the
+translation. For instance the french translation will be stored in the
+file <q>localize_fr.properties</q> stored in the base class directory
+and its content will be:</p>
+<pre>
+  # localize_fr.properties file content
+  PhoneBook=Annuaire
+  PhoneBook.search=rechercher
+  PhoneBook.add=ajouter
+  PhoneBook.remove=supprimer
+</pre>
+<p>IMPORTANT: the filename suffix (ex: fr) must be a valid
+language/country/variant combination (the underscore character '_' is
+used as a separator). See the
+<link href="http://java.sun.com/javase/6/docs/api/java/util/Locale.html"
+	type="text/html">Locale</link>
+class description for more information.</p>
+
+<h3>Third step: configure the translation language</h3>
+<p>Create a configuration file to define the required translation
+languages. Create a file, for instance <q>localize.properties</q>. For
+each translation language, a specific property shall be defined. This
+property key shall be prefixed with <q>localize.</q> and followed by the
+language/country/variant combination (The separator is the underscore
+character '_'). The value shall be the package name relative to the
+package of the base classe. Thus, in the example if the <q>AddressBook</q>
+is in the <q>sample</q> package and the french translated classes shall
+be define in the package <q>sample.francais</q>, the key will be <q>localize.fr</q>
+and the value <q>francais</q>.</p>
+<pre>
+  #localize.properties file content
+  localize.fr = francais
+</pre>
+
+<h3>Fourth step: generate the translated classes</h3>
+<p>This generation is based on the annotation processing facility of
+Java. The java compiler shall be launch with the tangara annotion JAR
+file in its classpath and with <q>-AlocalizeConf=/path/to/localize.properties</q>.
+The translated java files are in the directory defined by the <q>-s</q>
+javac option.</p>
+<h3>An example</h3>
+<p>A full example is developped in Tangara annotations project. The
+java files are stored into the directory <q>src/test/java/</q>, the
+configuration files are stored into the directory <q>src/test/resources</q>
+and the compilation command is defined in the <q>build.xml</q> file.</p>
+
+
+<h2>Usage features</h2>
+<p>The usage feature is used to propose a sample of a method use.
+For instance, if the method is <q>String getAddress(String name)</q>, a
+sample use is <q>getAddress("Bob")</q>. The <q>Usage</q> runtime
+annotation has been created to provide a sample use of the methods.</p>
+<h3>Use of <q>Usage</q> annotation</h3>
+<p>The use is very sample. For each method that shall provides a
+usage sample, add the <q>Usage</q> annotation and put the call argument
+sample into the value attribute as the next code extract.</p>
+<pre>
+  public class AddressBook {
+  
+  @Usage("\"bob\"")
+  public String getAddress(String person) { ...  }
+  
+  @Usage("\"bob\", \"bob's address\"")
+  public void addAddress( String person, String addess) { ...  }
+  
+  @Usage
+  public String getVersion() { ...   }
+  }
+</pre>
+<p>The <q>Usage</q> annotation is exploited at runtime. The class <q>UsageHelper</q>
+some useful methods to interact with the annotation. For instance, the
+next code...</p>
+<pre>
+  UsageAddressBook addressBook = new UsageAddressBook();
+  List&lt;String&gt; usageList = UsageHelper.findUsages(addressBook);
+  for (String usage : usageList) {
+      System.out.println("method " + usage);
+  }
+</pre>
+<p>produce the following output:</p>
+<pre>
+  method getAddress("bob")
+  method addAddress("bob", "bob's address")
+  method getVersion()
+</pre>
+<h3>Usage and Localization</h3>
+<p>It is possible to translate the usage in the localization
+process. The only thing to do is to define a property with a suffix <q>.usage</q>.
+For instance, the following localization resource bundle:</p>
+<pre>
+  PhoneBook.add=ajouter
+  PhoneBook.add.usage=\\"Antoine\\", \\"Adresse de Antoine\\"
+</pre>
+<p>will produce the following code extract:</p>
+<pre>
+  @Usage("\"Antoine\", \"Adresse de Antoine\"")
+  public void ajouterUnePersonne(java.lang.String p0, java.lang.String p1) { ... }
+</pre>
+<h2>Compilation</h2>
+<p>The java files annoted with @LocalizableClass and
+@LocalizableMethod shall be compiled with some specific options. These
+options are used to produce automatically the localized java files.</p>
+<pre>
+javac 
+</pre>
+<h2>Configuration file</h2>
+<p>The configuration file is specified by the annotation command line argument <q>org.colombbus.annotation.configuration</q>. The format of the file is the <a href="http://java.sun.com/javase/6/docs/api/java/util/Properties.html">standard properties file format</a>. There are two types of configuration properties:
+</p><ul><li>the localization properties</li><li>the generation properties</li></ul></p>
+<h3>The localization properties</h3>
+<p>The localization properties are used to specified the translation languages (or locale) and the package name of the generated java files. Each parameter key shall have the following format: <q>localize.&lt;locale&gt;</q>, where &lt;locale&gt; is a <a href="http://java.sun.com/javase/6/docs/api/java/util/Locale.html#toString()">localization information</a> (fr, en_US, etc.). The value of the property is the relative name of the package where the java files are generated. For instance, if the localize configuration file contains the line <q>localize.fr_FR=france</q>, this means that the localizable types and methods will be translated to french of France into the relative package france (ie. if the package of the localizable type is <q>my.pack.age</q>, the translation package will be <q>my.pack.age.france</q>.</p>
+<h3>The generation parameters</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Property key</th>
+      <th>Description</th>
+      <th>Default value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>fixbundles</td>
+      <td>Set to show or hide a fix reporting on the localization bundles. The following problems are reported:
+        <ul><li>the missing bundles as errors</li>
+            <li>the missing property keys as errors</li>
+            <li>the inherited property keys as warning</li>
+            <li>the unused keys as warnings</li>
+        </ul>
+      </td>
+      <td><q>false</q></td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>
