@@ -1,0 +1,10 @@
+	<tangara:object id="org.colombbus.tangara.extension.<extensionType>.<className>">
+		<tangara:locale-object lang="en"
+			class="org.colombbus.tangara.extension.<extensionType>.english.<enClassName>" name="<enClassName>">
+			<enDescription>
+		</tangara:locale-object>
+		<tangara:locale-object  lang="fr"
+			class="org.colombbus.tangara.extension.<extensionType>.francais.<frClassName>" name="<frClassName>">
+			<frDescription>
+		</tangara:locale-object>
+	</tangara:object>

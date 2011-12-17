@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tangara:extension xmlns:tangara="http://www.colombbus.org/tangara/schema/extension"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.colombbus.org/tangara/schema/extension tangara-extension.xsd "
+	id="org.colombbus.tangara.extension.<extensionType>" name="Tangara <extensionType> extention" version="1.0.1">
+	<tangara:copyright>(C) 2009 Colombbus (http://www.colombbus.org)
+	</tangara:copyright>
+	<tangara:license name="GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007">
+		<tangara:locale-license lang="en"
+			url="http://www.gnu.org/licenses/gpl.html">
+GNU GENERAL PUBLIC LICENSE
+Version 3, 29 June 2007
+Copyright (C) 2007 Free Software Foundation, Inc. &lt;http://fsf.org/&gt;
+Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
+		</tangara:locale-license>
+		<tangara:locale-license lang="fr"
+			url="http://www.rodage.org/gpl-3.0.fr.html">
+LICENCE PUBLIQUE GÉNÉRALE GNU
+Version 3, du 29 juin 2007.
+Copyright (C) 2007 Free Software Foundation, Inc. &lt;http://fsf.org/&gt;
+Chacun est autorisé à copier et distribuer des copies conformes de ce document de licence, mais toute modification en est proscrite.
+		</tangara:locale-license>
+	</tangara:license>

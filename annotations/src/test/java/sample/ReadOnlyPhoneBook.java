@@ -10,13 +10,13 @@ import org.colombbus.annotation.LocalizableMethod;
 @LocalizableClass(value = "", localize = false)
 public class ReadOnlyPhoneBook {
 
-    public ReadOnlyPhoneBook() {
-    }
+	public ReadOnlyPhoneBook() {
+	}
 
-    @LocalizableMethod("ReadOnlyPhoneBook.search")
-    public String search(String personName) {
-        System.out.println("Search person " + personName);
-        return "0145247000";
-    }
+	@LocalizableMethod("ReadOnlyPhoneBook.search")
+	public String search(String personName) {
+		System.out.println("Search person " + personName);
+		return "0145247000";
+	}
 
 }

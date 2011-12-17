@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Tangara commons</title>
+<meta name="generator" content="Bluefish 1.0.7"/>
+<meta name="author" content="Gwenaël Le Roux"/>
+<meta name="date" content="2010-07-16T23:31:02+0200"/>
+<meta name="copyright" content="Colombbus"/>
+<meta name="keywords" content=""/>
+<meta name="description" content=""/>
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW"/>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
+<meta http-equiv="content-style-type" content="text/css"/>
+<meta />
+</head>
+<body>
+<h1>Tangara commons library</h1>
+<h2>General purpose</h2>
+<p>Tangara commons library is a Java utilities library used by Tangara project. 
+It contains the following functionalities :
+<dl>
+	<dt>org.colombbus.tangara.commons.inject</dt>
+	<dd>A set of classes to load resources from properties files. Its provides also methods to inject resources into standard Swing components.</dd>
+	<dt>org.colombbus.tangara.commons.mvc</dt>
+	<dd>A set of class to help to create a Swing MVC application with action-methods and automated resource injection.</dd>
+</dl>    
+</p>
+
+<h2>Usage of org.colombbus.tangara.commons.inject/h2>
+<code></code>
+
+<h2>Usage of org.colombbus.tangara.commons.mvc/h2>
+<h3>MVC pattern choice</h3>
+<p>Model-View-Controller or MVC design pattern is a well-known pattern in graphical applications.
+A lot of interpretations and refinement exist (MVP, MVC2, M+VC, etc.) about the responsabilities of 
+each part (M,V,C), specialy on View and Controller parts.<br/>
+ In the tangara-commons, the responsabilities are the following:
+ <dl>
+	<dt>Model</dt>
+	<dd>This part is in charge of the state of the data and its update. It is 
+	not aware of View nor Controller. It provides two types of access: direct 
+	access by methods to get or update its content, and event to follow 
+	automatically its content changes.</dd>
+	<dt>View</dt>
+	<dd>This part is in charge of display information to the user. It communicates
+	with the Model through direct access for initialization purpose (read-only),
+	and event for updating the display dynamically. It nevers updates directly
+	the content of the model.</dd>
+	<dt>Controller</dt>
+	<dd>Controller part is the coordinator of the whole. It receives inputs 
+	from the view, and sometimes from the model. It coordinates the 
+	</dd>
+
+</dl>
+
+</p>
+<code></code>
+
+</body>
+</html>

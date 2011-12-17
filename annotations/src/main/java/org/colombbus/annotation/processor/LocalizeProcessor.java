@@ -19,93 +19,90 @@ import org.colombbus.annotation.LocalizableClass;
 import org.colombbus.annotation.LocalizableMethod;
 
 /**
- * Processor of the {@link LocalizableClass} and {@link LocalizableMethod} annotations
- *
- * @version $Id: LocalizeProcessor.java,v 1.4 2009/01/10 12:45:00 gwenael.le_roux Exp $
+ * Processor of the {@link LocalizableClass} and {@link LocalizableMethod}
+ * annotations
+ * 
+ * @version $Id: LocalizeProcessor.java,v 1.4 2009/01/10 12:45:00
+ *          gwenael.le_roux Exp $
  * @author Benoit
  * @author gwen
  */
 @SupportedOptions("org.colombbus.annotation.configuration")
-@SupportedAnnotationTypes( { "org.colombbus.annotation.LocalizableClass",
-        "org.colombbus.annotation.LocalizableMethod" })
+@SupportedAnnotationTypes({ "org.colombbus.annotation.LocalizableClass", "org.colombbus.annotation.LocalizableMethod" })
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class LocalizeProcessor extends AbstractProcessor {
 
+	private static final String CONFIG_OPT = "org.colombbus.annotation.configuration"; //$NON-NLS-1$
 
-    private static final String CONFIG_OPT = "org.colombbus.annotation.configuration"; //$NON-NLS-1$
+	private final Collection<TypeElement> processedClasses = new HashSet<TypeElement>();
 
-    private final Collection<TypeElement> processedClasses = new HashSet<TypeElement>();
+	private DictionaryStore dicStore;
 
-    private DictionaryStore dicStore;
+	private final AnnotationLogger logger = new AnnotationLogger();
 
-    private final AnnotationLogger logger = new AnnotationLogger();
+	private final Configuration conf = new Configuration();
 
-    private final Configuration conf = new Configuration();
+	private ClassGenerator generator = new ClassGenerator();
 
-    private ClassGenerator generator = new ClassGenerator();
+	/**
+	 * Create a new processor
+	 */
+	public LocalizeProcessor() {
+		conf.setLogger(logger);
+	}
 
-    /**
-     * Create a new processor
-     */
-    public LocalizeProcessor() {
-        conf.setLogger(logger);
-    }
+	@Override
+	public synchronized void init(ProcessingEnvironment processEnv) {
+		super.init(processEnv);
+		logger.setProcessingEnvironment(processEnv);
+		logger.formatInfo("LocalizeProcessor.INITIALIZATION"); //$NON-NLS-1$
 
-    @Override
-    public synchronized void init(ProcessingEnvironment processEnv) {
-        super.init(processEnv);
-        logger.setProcessingEnvironment(processEnv);
-        logger.formatInfo("LocalizeProcessor.INITIALIZATION"); //$NON-NLS-1$
+		if (processEnv.getOptions().containsKey(CONFIG_OPT)) {
+			conf.loadConfiguration(processEnv);
+			dicStore = new DictionaryStore(processEnv);
+		} else {
+			logger.formatError("LocalizeProcessor.MISSING_OPTION", CONFIG_OPT); //$NON-NLS-1$
+		}
 
-        if (processEnv.getOptions().containsKey(CONFIG_OPT)) {
-            conf.loadConfiguration(processEnv);
-            dicStore = new DictionaryStore(processEnv);
-        } else {
-            logger.formatError("LocalizeProcessor.MISSING_OPTION", CONFIG_OPT); //$NON-NLS-1$
-        }
+		generator.setConfiguration(conf);
+		generator.setDictionnaryStore(dicStore);
+		generator.setLogger(logger);
+		generator.setProcessingEnvironment(processEnv);
+	}
 
-        generator.setConfiguration(conf);
-        generator.setDictionnaryStore(dicStore);
-        generator.setLogger(logger);
-        generator.setProcessingEnvironment(processEnv);
-    }
+	private boolean firstProcessMethodCall = true;
 
-    private boolean firstProcessMethodCall = true;
+	@Override
+	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+		int processedClassCount = 0;
 
-    @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        int processedClassCount = 0;
+		if (firstProcessMethodCall) {
+			Set<? extends Element> localizElemSet = roundEnv.getElementsAnnotatedWith(LocalizableClass.class);
+			Set<TypeElement> localizTypeSet = ElementFilter.typesIn(localizElemSet);
 
-        if (firstProcessMethodCall) {
-            Set<? extends Element> localizElemSet = roundEnv
-                    .getElementsAnnotatedWith(LocalizableClass.class);
-            Set<TypeElement> localizTypeSet = ElementFilter.typesIn(localizElemSet);
+			for (TypeElement localizableTypeElem : localizTypeSet) {
+				if (processedClasses.contains(localizableTypeElem) == false) {
+					generator.localizeClass(localizableTypeElem);
+					processedClasses.add(localizableTypeElem);
+					processedClassCount++;
+				}
+			}
 
-            for (TypeElement localizableTypeElem : localizTypeSet) {
-                if (processedClasses.contains(localizableTypeElem) == false) {
-                    generator.localizeClass(localizableTypeElem);
-                    processedClasses.add(localizableTypeElem);
-                    processedClassCount++;
-                }
-            }
+			// Generate the fixes
+			if (conf.fixBundlesEnabled()) {
+				fixBundles();
+			}
+			firstProcessMethodCall = false;
+		}
+		return processedClassCount > 0;
+	}
 
-            // Generate the fixes
-            if (conf.fixBundlesEnabled()) {
-                fixBundles();
-            }
-            firstProcessMethodCall = false;
-        }
-        return processedClassCount > 0;
-    }
-
-    private void fixBundles() {
-        logger.formatInfo("LocalizeProcessor.GENERATE_FIX"); //$NON-NLS-1$
-        // TODO find the unused bundle files
-        for (Dictionary dictionary : dicStore.dictionaries()) {
-            dictionary.fixBundle(processingEnv.getMessager());
-        }
-    }
-
-
+	private void fixBundles() {
+		logger.formatInfo("LocalizeProcessor.GENERATE_FIX"); //$NON-NLS-1$
+		// TODO find the unused bundle files
+		for (Dictionary dictionary : dicStore.dictionaries()) {
+			dictionary.fixBundle(processingEnv.getMessager());
+		}
+	}
 
 }
